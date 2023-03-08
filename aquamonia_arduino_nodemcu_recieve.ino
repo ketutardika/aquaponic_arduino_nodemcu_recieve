@@ -8,12 +8,6 @@
 #include <SPI.h>   // Add Wifi Client
 #include <EEPROM.h>
 
-#include "sr01_dht11_function.h"
-#include "sr02_tds_function.h"
-#include "sr03_turbidity_function.h"
-#include "sr04_water_temp_function.h"
-#include "sr05_ph_function.h"
-
 WiFiManager wifiManager;
 ESP8266WebServer server(80);
 const int interval = 60000; // Waktu interval dalam milidetik (3 jam = 3 x 60 x 60 x 1000)
@@ -135,11 +129,6 @@ void handleRoot() {
 void setup() {
   Serial.begin(115200);
   EEPROM.begin(2048);
-  setup_dht();
-  setup_tds();
-  setup_turbidity();
-  setup_water_temp();
-  setup_ph();
   wifiManager.addParameter(&custom_name_server);
   wifiManager.addParameter(&custom_secret_key);
   wifiManager.addParameter(&custom_device_key);
@@ -172,27 +161,6 @@ void setup() {
 }
 
 void loop() {
-  float temperature_sensor = readTemperature();
-  float humidity_sensor = readHumidity();
-  float tds_sensor = read_tds_value();
-  float turbidity_sensor = read_turbidity_value();
-  float water_temp_sensor = read_water_temp_value();
-  float ph_sensor = read_ph_return();
-
-  Serial.print("Temperature Reading: ");
-  Serial.println(temperature_sensor);
-  Serial.print("Humidity Sensor: ");
-  Serial.println(humidity_sensor);
-  Serial.print("TDS Sensor: ");
-  Serial.println(tds_sensor);
-  Serial.print("Turbidity Sensor: ");
-  Serial.println(turbidity_sensor);
-  Serial.print("Water Temperature Sensor: ");
-  Serial.println(water_temp_sensor);
-  Serial.print("PH: ");
-  Serial.println(ph_sensor);
-  delay(10000);
-
   server.handleClient();
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
