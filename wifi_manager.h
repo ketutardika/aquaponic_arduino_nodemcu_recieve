@@ -4,5 +4,6 @@
 
 void setup_wifi_manager();
 void read_wifi_manager();
+void wmresetsetting();
 
 #endif
