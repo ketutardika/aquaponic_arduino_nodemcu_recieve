@@ -165,15 +165,17 @@ void deviceSetup(){
     return;
   }
 
-  String NewEndpointUrl = bacaDariEEPROM(0);
-  String NewAuthSecretKey = bacaDariEEPROM(NewEndpointUrl.length() + 1);
-  String NewDeviceApiKey = bacaDariEEPROM(NewEndpointUrl.length() + NewAuthSecretKey.length() + 2);
-  String NewDeviceApiKey_2 = bacaDariEEPROM(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + 3);
-  String NewDeviceApiKey_3 = bacaDariEEPROM(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + 4);
-  String NewDeviceApiKey_4 = bacaDariEEPROM(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + 5);
-  String NewDeviceApiKey_5 = bacaDariEEPROM(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + 6);          
-  String NewDeviceApiKey_6 = bacaDariEEPROM(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + NewDeviceApiKey_5.length() + 7);          
+  String NewSendInterval = bacaDariEEPROM(0);
+  String NewEndpointUrl = bacaDariEEPROM(NewSendInterval.length() + 1);
+  String NewAuthSecretKey = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + 2);
+  String NewDeviceApiKey  = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + 3);
+  String NewDeviceApiKey_2 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + 4);
+  String NewDeviceApiKey_3 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + 5);
+  String NewDeviceApiKey_4 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + 6);
+  String NewDeviceApiKey_5 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + 7);          
+  String NewDeviceApiKey_6 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + NewDeviceApiKey_5.length() + 8);          
   
+  String SendInterval = String(NewSendInterval);
   String EndpointUrl = String(NewEndpointUrl);
   String AuthSecretKey = String(NewAuthSecretKey);
   String DeviceApiKey = String(NewDeviceApiKey);
@@ -196,20 +198,25 @@ void deviceSetup(){
   html += "<thead>";
   html += "<tr>";
   html += "<th>#</th>";
-  html += "<th>Token Name</th>";
-  html += "<th>Token Secret Key</th>";
+  html += "<th>Configuration</th>";
+  html += "<th>Value</th>";
   html += "</tr>";
   html += "</thead>";
   html += "<tbody>";
   html += "<tr>";
   html += "<th scope='row'>1</th>";
+  html += "<td>Data Sending Interval (Hour)</td>";
+  html += "<td><input type='number' id='interval' name='interval' value='" + SendInterval + "' style='width:100%;'></td>";
+  html += "</tr>";
+  html += "<tr>";
+  html += "<th scope='row'>2</th>";
   html += "<td>Endpoint API Url</td>";
   html += "<td><input type='text' id='enpoint' name='serverName' value='" + EndpointUrl + "' style='width:100%;'></td>";
   html += "</tr>";
   html += "<tr>";
-  html += "<th scope='row'>1</th>";
+  html += "<th scope='row'>3</th>";
   html += "<td>Secret Key</td>";
-  html += "<td><input type='text' id='token' name='secretKey' value='" + AuthSecretKey + "' style='width:100%;'></td>";
+  html += "<td><textarea class='form-control' id='token' name='secretKey' rows='3'>" + AuthSecretKey + "</textarea></td>";
   html += "</tr>";
   html += "</tbody>";
   html += "</table>";
@@ -222,7 +229,7 @@ void deviceSetup(){
   html += "<th>#</th>";
   html += "<th>Device Number</th>";
   html += "<th>Device API Key</th>";
-  html += "<th>Action</th>";
+  html += "<th>Update Value</th>";
   html += "</tr>";
   html += "</thead>";
   html += "<tbody>";
@@ -300,6 +307,7 @@ void menureset(){
 
 
 void saveWebEeProm(){
+      String SendInterval = server.arg("interval");
       String EndpointUrl = server.arg("serverName");
       String AuthSecretKey = server.arg("secretKey");
       String DeviceApiKey = server.arg("deviceKey");
@@ -310,6 +318,8 @@ void saveWebEeProm(){
       String DeviceApiKey_6 = server.arg("deviceKey_6");
 
       int addr = 0; // alamat awal penyimpanan di EEPROM
+      simpanKeEEPROM(addr, SendInterval);
+      addr += SendInterval.length() + 1;
       simpanKeEEPROM(addr, EndpointUrl);
       addr += EndpointUrl.length() + 1; // tambahkan panjang string + 1 untuk null terminator
       simpanKeEEPROM(addr, AuthSecretKey);
