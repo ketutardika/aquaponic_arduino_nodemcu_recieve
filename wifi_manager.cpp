@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <WiFiManager.h>
 #include <EEPROM.h>
-WiFiManager wifiManager;
 
 int status = WL_IDLE_STATUS;
 
