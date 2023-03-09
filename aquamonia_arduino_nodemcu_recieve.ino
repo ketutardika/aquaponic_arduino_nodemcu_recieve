@@ -1,6 +1,5 @@
 #include <Arduino.h>
-#include <ArduinoJson.h>              // import DHT11 sensor
-#include <WiFiManager.h>
+#include <ArduinoJson.h> 
 #include <ESP8266WiFi.h>        //import ESP8266 WiFi library
 #include <ESP8266HTTPClient.h>  //import ESP8266 HTTP Client library
 #include <ESP8266WebServer.h>
@@ -8,7 +7,8 @@
 #include <SPI.h>   // Add Wifi Client
 #include <EEPROM.h>
 
-WiFiManager wifiManager;
+#include "wifi_manager.h"
+
 ESP8266WebServer server(80);
 const int interval = 60000; // Waktu interval dalam milidetik (3 jam = 3 x 60 x 60 x 1000)
 unsigned long previousMillis = 0;
@@ -36,16 +36,6 @@ char deviceKey_4[250];
 char deviceKey_5[250];
 char deviceKey_6[250];
 
-WiFiManagerParameter custom_name_server("serverName", "API Endpoint URL", serverName, 250);
-WiFiManagerParameter custom_secret_key("secretKey", "Secret Key", secretKey, 1500);
-WiFiManagerParameter custom_device_key("deviceKey", "Device Key 1", deviceKey, 250);
-WiFiManagerParameter custom_device_key_2("deviceKey_2", "Device Key 2", deviceKey_2, 250);
-WiFiManagerParameter custom_device_key_3("deviceKey_3", "Device Key 3", deviceKey_3, 250);
-WiFiManagerParameter custom_device_key_4("deviceKey_4", "Device Key 4", deviceKey_4, 250);
-WiFiManagerParameter custom_device_key_5("deviceKey_5", "Device Key 5", deviceKey_5, 250);
-WiFiManagerParameter custom_device_key_6("deviceKey_6", "Device Key 6", deviceKey_6, 250);
-
-int status = WL_IDLE_STATUS;
 WiFiClient client;
 
 //Check if header is present and correct
@@ -129,23 +119,13 @@ void handleRoot() {
 void setup() {
   Serial.begin(115200);
   EEPROM.begin(2048);
-  wifiManager.addParameter(&custom_name_server);
-  wifiManager.addParameter(&custom_secret_key);
-  wifiManager.addParameter(&custom_device_key);
-  wifiManager.addParameter(&custom_device_key_2);
-  wifiManager.addParameter(&custom_device_key_3);
-  wifiManager.addParameter(&custom_device_key_4);
-  wifiManager.addParameter(&custom_device_key_5);
-  wifiManager.addParameter(&custom_device_key_6);
-  ConnectWifiManager();
-
+  setup_wifi_manager();
   // inisialisasi server web dan menangani permintaan root
   server.on("/", home);
   server.on("/login", handleLogin);
   server.on("/device-setup", deviceSetup);
   server.on("/device-monitor", deviceMonitor);
   server.on("/menu-reset", menureset);
-  server.on("/reseting-eeprom", resetingEeprom);
   server.on("/save-eeprom", saveWebEeProm);
 
   server.onNotFound(handleNotFound);
@@ -169,63 +149,7 @@ void loop() {
   }
 }
 
-void ConnectWifiManager(){
-  wifiManager.setSaveConfigCallback(saveConfigCallback);
 
-  if (!wifiManager.autoConnect("AutoConnectAP","password")) {
-    Serial.println("Failed to connect to WiFi and hit timeout");
-    delay(3000);
-    ESP.reset();
-    delay(5000);
-  }
-  
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("WiFi connected!");
-  }
-  
-}
-
-void saveConfigCallback () {
-  if (WiFi.status() == WL_CONNECTED) {
-      strcpy(serverName, custom_name_server.getValue());
-      strcpy(secretKey, custom_secret_key.getValue());
-      strcpy(deviceKey, custom_device_key.getValue());
-      strcpy(deviceKey_2, custom_device_key_2.getValue());
-      strcpy(deviceKey_3, custom_device_key_3.getValue());
-      strcpy(deviceKey_4, custom_device_key_4.getValue());
-      strcpy(deviceKey_5, custom_device_key_5.getValue());
-      strcpy(deviceKey_6, custom_device_key_6.getValue());
-
-      String EndpointUrl = String(serverName);
-      String AuthSecretKey = String(secretKey);
-      String DeviceApiKey = String(deviceKey);
-      String DeviceApiKey_2 = String(deviceKey_2);
-      String DeviceApiKey_3 = String(deviceKey_3);
-      String DeviceApiKey_4 = String(deviceKey_4);
-      String DeviceApiKey_5 = String(deviceKey_5);
-      String DeviceApiKey_6 = String(deviceKey_6);
-
-      int addr = 0; // alamat awal penyimpanan di EEPROM
-      simpanKeEEPROM(addr, EndpointUrl);
-      addr += EndpointUrl.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, AuthSecretKey);
-      addr += AuthSecretKey.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey);
-      addr += DeviceApiKey.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_2);
-      addr += DeviceApiKey_2.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_3);
-      addr += DeviceApiKey_3.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_4);
-      addr += DeviceApiKey_4.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_5);
-      addr += DeviceApiKey_5.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_6);
-  }
-  else {
-    Serial.println("Failed to save config: WiFi not connected");
-  }
-}
 
 void simpanKeEEPROM(int addr, String data) {
   int len = data.length();
@@ -247,45 +171,9 @@ String bacaDariEEPROM(int addr) {
   return data;
 }
 
-void resetEEPROM() {
-  for (int i = 0; i < EEPROM.length(); i++) {
-    EEPROM.write(i, 0);
-  }
-  EEPROM.commit();
-  Serial.println("EEPROM resetted.");
-}
 
-void resetingEeprom(){
-  resetEEPROM();
-  wifiManager.resetSettings();
-  server.stop();
-}
 
-void questions(){
-  Serial.println("1. Read");
-  Serial.println("2. Reset");  
-  Serial.println("Which sensor would you like to read? ");
-  while (Serial.available() == 0) {
-  }
-  int menuChoice = Serial.parseInt();
-  switch (menuChoice) {
-    case 1:
-    {     
-      sendData();
-    }
-    break;  
-    case 2:
-    {
-      resetEEPROM();
-      wifiManager.resetSettings();
-    }
-    break;
-    default:
-    {
-      Serial.println("Please choose a valid selection");
-    }
-  }
-}
+
 
 void sendData() {
   float value = random(24.1,30.9);

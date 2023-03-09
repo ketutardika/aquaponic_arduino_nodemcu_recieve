@@ -1,5 +1,5 @@
-#ifndef 01_WIFI_MANAGER_H
-#define 01_WIFI_MANAGER_H
+#ifndef WIFI_MANAGER_H
+#define WIFI_MANAGER_H
 #include <Arduino.h>
 
 void setup_wifi_manager();
