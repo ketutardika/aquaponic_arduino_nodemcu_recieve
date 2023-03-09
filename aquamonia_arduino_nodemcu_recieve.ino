@@ -20,7 +20,6 @@ void setup() {
   setup_sendData();
   Serial1.begin(9600);
   nodemcu.begin(9600);
-  while (!Serial) continue;
   setup_wifi_manager();
   setup_esp_server();
   delay(5000);
