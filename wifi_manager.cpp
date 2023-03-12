@@ -1,18 +1,23 @@
 #include <Arduino.h>
 #include <WiFiManager.h>
 
-
 WiFiManager wifiManager;
-int status = WL_IDLE_STATUS;
 
-void ConnectWifiManager(){
-  if (!wifiManager.autoConnect("AquamoniaOS","password")) {
-    Serial.println("Failed to connect to WiFi and hit timeout");
-    delay(5000);
-  }  
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("WiFi connected!");
-  }
+void ConnectWifiManager(){ 
+
+  bool res;
+    // res = wm.autoConnect(); // auto generated AP name from chipid
+    // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
+    res = wifiManager.autoConnect("AquamoniaOS","password"); // password protected ap
+
+    if(!res) {
+        Serial.println("Failed to connect");
+        // ESP.restart();
+    } 
+    else {
+        //if you get here you have connected to the WiFi    
+        Serial.println("connected...yeey :)");
+    }
 }
 
 void wmresetsetting(){

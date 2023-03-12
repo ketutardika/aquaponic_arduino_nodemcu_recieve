@@ -60,17 +60,15 @@ void handle_sendData() {
   float value_device_5 = 0;
   float value_device_6 = 0;
 
-  String NewSendInterval = bacaDariEEPROMMain(0);
-  String NewEndpointUrl = bacaDariEEPROMMain(NewSendInterval.length() + 1);
-  String NewAuthSecretKey = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + 2);
-  String NewDeviceApiKey  = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + 3);
-  String NewDeviceApiKey_2 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + 4);
-  String NewDeviceApiKey_3 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + 5);
-  String NewDeviceApiKey_4 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + 6);
-  String NewDeviceApiKey_5 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + 7);          
-  String NewDeviceApiKey_6 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + NewDeviceApiKey_5.length() + 8);          
+  String NewEndpointUrl = bacaDariEEPROMMain(0);
+  String NewAuthSecretKey = bacaDariEEPROMMain(NewEndpointUrl.length() + 1);
+  String NewDeviceApiKey  = bacaDariEEPROMMain(NewEndpointUrl.length() + NewAuthSecretKey.length() + 2);
+  String NewDeviceApiKey_2 = bacaDariEEPROMMain(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + 3);
+  String NewDeviceApiKey_3 = bacaDariEEPROMMain(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + 4);
+  String NewDeviceApiKey_4 = bacaDariEEPROMMain(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + 5);
+  String NewDeviceApiKey_5 = bacaDariEEPROMMain(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + 6);          
+  String NewDeviceApiKey_6 = bacaDariEEPROMMain(NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + NewDeviceApiKey_5.length() + 7);          
   
-  String LenSendInterval = String(NewSendInterval);
   String LenEndpointUrl = String(NewEndpointUrl);
   String LenAuthSecretKey = String(NewAuthSecretKey);
   String LenDeviceApiKey = String(NewDeviceApiKey);
@@ -80,7 +78,6 @@ void handle_sendData() {
   String LenDeviceApiKey_5 = String(NewDeviceApiKey_5);
   String LenDeviceApiKey_6 = String(NewDeviceApiKey_6);
 
-  String SendInterval = LenSendInterval.length() > 0 ? LenSendInterval : "0";
   String EndpointUrl = LenEndpointUrl.length() > 0 ? LenEndpointUrl : "http://aquamonia.com";
   String AuthSecretKey = LenAuthSecretKey.length() > 0 ? LenAuthSecretKey : "0";
   String DeviceApiKey  = LenDeviceApiKey.length() > 0 ? LenDeviceApiKey : "0";
