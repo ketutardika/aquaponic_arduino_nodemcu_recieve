@@ -1,12 +1,11 @@
-#include <Arduino.h>
 #include <ESP8266WiFi.h>        //import ESP8266 WiFi library
 #include <ESP8266HTTPClient.h>  //import ESP8266 HTTP Client library
 #include <ESP8266WebServer.h>
-#include <WiFiClient.h>   
-#include <SPI.h>   // Add Wifi Client
+#include <WiFiClient.h>
 #include <EEPROM.h>
 
 #include "wifi_manager.h"
+#include "read_serial.h"
 
 ESP8266WebServer server(80);
 
@@ -137,12 +136,12 @@ void deviceMonitor() {
     return;
   }
 
-  float value = random(24.1,30.9);
-  float value_device_2 = random(70.1,90.9);
-  float value_device_3 = random(300,500);
-  float value_device_4 = random(30,70);
-  float value_device_5 = random(20.1,35.9);
-  float value_device_6 = random(6.1,8.1);
+  float value = readTemperature();
+  float value_device_2 = readHumidity();
+  float value_device_3 = readTds();
+  float value_device_4 = readTurbidity();
+  float value_device_5 = readWaterTemp();
+  float value_device_6 = readPh();
   
   String html = "<html charset=UTF-8>";
   html += "<head> <meta charset='utf-8'/> <meta name='viewport' content='width=device-width'> <title>Arduino Device Setup | Aquamonia</title> <meta name='title' content='Arduino Device Setup | Aquamonia'> <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css'> <link rel='stylesheet' href='https://aquamonia.com/arduino/assets/css/style.css'></head>";
@@ -343,7 +342,7 @@ void saveWebEeProm(){
 
 
 void resetEEPROM() {
-  for (int i = 0; i < EEPROM.length(); i++) {
+  for (size_t i = 0; i < EEPROM.length(); i++) {
     EEPROM.write(i, 0);
   }
   EEPROM.commit();

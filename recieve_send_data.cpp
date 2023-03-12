@@ -1,9 +1,8 @@
-#include <Arduino.h>
-#include <ArduinoJson.h> 
 #include <ESP8266WiFi.h>        //import ESP8266 WiFi library
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <EEPROM.h>
+#include "read_serial.h"
 
 
 WiFiClient client;
@@ -53,12 +52,12 @@ void setup_sendData(){
 void handle_sendData() {
   EEPROM.begin(2048);
   
-  float value = 0;
-  float value_device_2 = 0;
-  float value_device_3 = 0;
-  float value_device_4 = 0;
-  float value_device_5 = 0;
-  float value_device_6 = 0;
+  float value = readTemperature();
+  float value_device_2 = readHumidity();
+  float value_device_3 = readTds();
+  float value_device_4 = readTurbidity();
+  float value_device_5 = readWaterTemp();
+  float value_device_6 = readPh();
 
   String NewSendInterval = bacaDariEEPROMMain(0);
   String NewEndpointUrl = bacaDariEEPROMMain(NewSendInterval.length() + 1);
