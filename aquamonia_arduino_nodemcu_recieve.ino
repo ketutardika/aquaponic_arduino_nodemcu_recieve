@@ -46,8 +46,8 @@ void loop() {
 
   long unsigned int currentMillis = millis();
   if (currentMillis - previousMillis >= intervalTotal) {
-    readSerials();
     handle_sendData();
+    readSerials();    
     previousMillis = currentMillis;
   }
 }
