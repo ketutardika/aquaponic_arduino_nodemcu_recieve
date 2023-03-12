@@ -1,14 +1,23 @@
 #include <ArduinoJson.h> 
+#include <ESP8266WiFi.h>
 #include <SoftwareSerial.h>
 
 //D6 = Rx & D5 = Tx
 SoftwareSerial SerialMega(D6, D5);
 float temperature_sensor, humidity_sensor, tds_sensor, turbidity_sensor, water_temp_sensor, ph_sensor;
 float temperature, humidity, tds, turbidity, water_temp, ph;
-float suhu, kelembaban, cahaya;
+
+#define HOUR (0.1 * 60 * 1000L)
+unsigned long last_time = 0L;
+
+//Timer to run Arduino code every 5 seconds
+unsigned long previousMillisBB = 0;
+unsigned long currentMillisBB;
+const unsigned long periodBB = 1000;
 
 void setup_read_serial(){
   SerialMega.begin(9600);
+  WiFi.mode(WIFI_STA);
 }
 
 void readSensor() {
