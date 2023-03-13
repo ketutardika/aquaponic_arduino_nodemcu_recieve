@@ -5,11 +5,13 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 
+#include "led_function.h"
 #include "wifi_manager.h"
 #include "esp_server_portal.h"
 #include "recieve_send_data.h"
 #include "read_serial.h"
 
+const int ledPin = D0;
 const int interval = 60000; // Waktu interval dalam milidetik (3 jam = 3 x 60 x 60 x 1000)
 long unsigned int previousMillis = 0;
 
@@ -20,6 +22,8 @@ void setup() {
   setup_esp_server();
   setup_sendData();
   Serial.println("Server Start");
+  setupLED(ledPin);
+  powerOnLED(ledPin); 
   delay(5000);
 }
 
