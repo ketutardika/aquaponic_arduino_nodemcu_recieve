@@ -105,8 +105,11 @@ void readSerialData() {
     addr += water_temp.length() + 1; // tambahkan panjang string + 1 untuk null terminator
     saveEEPROM(addr, ph);
 
+    SerialMega.println(WiFi.localIP());
+    Serial.print(WiFi.localIP());
+
     // Print data to serial monitor
-    Serial.print("Recieve Data From Arduino: ");
+    Serial.print(" Local IP | Recieve Data From Arduino: ");
     Serial.print("Temperature: ");
     Serial.print(temperature);
     Serial.print("  Humidity: ");
