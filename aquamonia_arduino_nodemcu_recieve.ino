@@ -1,12 +1,11 @@
 #include <Arduino.h>
 
-#include <WiFiClientSecure.h>
-
 #include "wifi_manager.h"
 #include "esp_server_portal.h"
 #include "recieve_send_data.h"
 #include "read_serial.h"
 #include "helper_function.h"
+#include "send_googlesheet.h"
 
 const int ledPin = D0;
 const int interval = 60000; // Waktu interval dalam milidetik (3 jam = 3 x 60 x 60 x 1000)
@@ -18,7 +17,7 @@ void setup() {
   setup_read_serial();
   setup_wifi_manager();  
   setup_esp_server();
-  setup_sendData();  
+  setup_sendData();
   Serial.println("Server Start");
   setupLED(ledPin);
   powerOnLED(ledPin); 
