@@ -105,11 +105,21 @@ void readSerialData() {
     addr += water_temp.length() + 1; // tambahkan panjang string + 1 untuk null terminator
     saveEEPROM(addr, ph);
 
-    SerialMega.println(WiFi.localIP());
-    Serial.print(WiFi.localIP());
+
+    IPAddress broadCast = WiFi.localIP();
+    StaticJsonDocument<200> doc;
+    doc["ip1"] = broadCast[0];
+    doc["ip2"] = broadCast[1];
+    doc["ip3"] = broadCast[2];
+    doc["ip4"] = broadCast[3];
+    String jsonString;
+    serializeJson(doc, jsonString);
+    // Mengirim data ke SerialNode
+    SerialMega.println(jsonString);
+    Serial.print("Json : " + jsonString);
 
     // Print data to serial monitor
-    Serial.print(" Local IP | Recieve Data From Arduino: ");
+    Serial.print(" | Recieve Data From Arduino: ");
     Serial.print("Temperature: ");
     Serial.print(temperature);
     Serial.print("  Humidity: ");
