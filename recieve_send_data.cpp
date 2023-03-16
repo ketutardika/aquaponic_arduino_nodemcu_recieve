@@ -1,19 +1,14 @@
+#include <Arduino.h>
 #include <ESP8266WiFi.h>        //import ESP8266 WiFi library
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <EEPROM.h>
 #include "read_serial.h"
+#include "helper_function.h"
 
 
 WiFiClient client;
 HTTPClient http;
-
-float value = 0;
-float value_device_2 = 0;
-float value_device_3 = 0;
-float value_device_4 = 0;
-float value_device_5 = 0;
-float value_device_6 = 0;
 
 String measurement = "C";
 String measurement_2 = "%";
@@ -22,18 +17,7 @@ String measurement_4 = "NTU";
 String measurement_5 = "C";
 String measurement_6 = "PH";
 
-String bacaDariEEPROMMain(int addr) {
-  String data = "";
-  char ch = EEPROM.read(addr);
-  while (ch != '\0') {
-    data += ch;
-    addr++;
-    ch = EEPROM.read(addr);
-  }
-  return data;
-}
-
-void sendFormData(String EndpointUrl, String AuthSecretKey, String DeviceApiKey, float value, String measurement) {
+void sendFormData(String EndpointUrl, String AuthSecretKey, String DeviceApiKey, String value, String measurement) {
   http.begin(client, EndpointUrl);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   http.addHeader("Accept", "application/json");
@@ -46,28 +30,26 @@ void sendFormData(String EndpointUrl, String AuthSecretKey, String DeviceApiKey,
 }
 
 void setup_sendData(){
-  
+  setupEEPROM();
 }
 
-void handle_sendData() {
-  EEPROM.begin(2048);
-  
-  float value = readTemperature();
-  float value_device_2 = readHumidity();
-  float value_device_3 = readTds();
-  float value_device_4 = readTurbidity();
-  float value_device_5 = readWaterTemp();
-  float value_device_6 = readPh();
+void handle_sendData() {  
+  String value_devices_1 = readEEPROM(4000);
+  String value_devices_2 = readEEPROM(4000 + value_devices_1.length() + 1);
+  String value_devices_3 = readEEPROM(4000 + value_devices_1.length() + value_devices_2.length() + 2);
+  String value_devices_4 = readEEPROM(4000 + value_devices_1.length() + value_devices_2.length() + value_devices_3.length() + 3);
+  String value_devices_5 = readEEPROM(4000 + value_devices_1.length() + value_devices_2.length() + value_devices_3.length() + value_devices_4.length() + 4);
+  String value_devices_6 = readEEPROM(4000 + value_devices_1.length() + value_devices_2.length() + value_devices_3.length() + value_devices_4.length() + value_devices_5.length() + 5);
 
-  String NewSendInterval = bacaDariEEPROMMain(0);
-  String NewEndpointUrl = bacaDariEEPROMMain(NewSendInterval.length() + 1);
-  String NewAuthSecretKey = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + 2);
-  String NewDeviceApiKey  = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + 3);
-  String NewDeviceApiKey_2 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + 4);
-  String NewDeviceApiKey_3 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + 5);
-  String NewDeviceApiKey_4 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + 6);
-  String NewDeviceApiKey_5 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + 7);          
-  String NewDeviceApiKey_6 = bacaDariEEPROMMain(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + NewDeviceApiKey_5.length() + 8);          
+  String NewSendInterval = readEEPROM(0);
+  String NewEndpointUrl = readEEPROM(NewSendInterval.length() + 1);
+  String NewAuthSecretKey = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + 2);
+  String NewDeviceApiKey  = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + 3);
+  String NewDeviceApiKey_2 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + 4);
+  String NewDeviceApiKey_3 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + 5);
+  String NewDeviceApiKey_4 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + 6);
+  String NewDeviceApiKey_5 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + 7);          
+  String NewDeviceApiKey_6 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + NewDeviceApiKey_5.length() + 8);          
   
   String LenSendInterval = String(NewSendInterval);
   String LenEndpointUrl = String(NewEndpointUrl);
@@ -89,10 +71,10 @@ void handle_sendData() {
   String DeviceApiKey_5 = LenDeviceApiKey_5.length() > 0 ? LenDeviceApiKey_5 : "0";
   String DeviceApiKey_6 = LenDeviceApiKey_6.length() > 0 ? LenDeviceApiKey_6 : "0";
 
-  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey, value, measurement);
-  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_2, value_device_2, measurement_2);
-  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_3, value_device_3, measurement_3);
-  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_4, value_device_4, measurement_4);
-  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_5, value_device_5, measurement_5);
-  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_6, value_device_6, measurement_6);
+  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey, value_devices_1, measurement);
+  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_2, value_devices_2, measurement_2);
+  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_3, value_devices_3, measurement_3);
+  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_4, value_devices_4, measurement_4);
+  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_5, value_devices_5, measurement_5);
+  sendFormData(EndpointUrl, AuthSecretKey, DeviceApiKey_6, value_devices_6, measurement_6);
 }

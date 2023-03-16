@@ -1,11 +1,11 @@
 #include <ESP8266WiFi.h>        //import ESP8266 WiFi library
 #include <ESP8266HTTPClient.h>  //import ESP8266 HTTP Client library
 #include <ESP8266WebServer.h>
-#include <WiFiClient.h>
 #include <EEPROM.h>
 
 #include "wifi_manager.h"
 #include "read_serial.h"
+#include "helper_function.h"
 
 ESP8266WebServer server(80);
 
@@ -87,26 +87,6 @@ void handleRoot() {
   server.send(200, "text/plain", "Hello from Aquamonia!");
 }
 
-void simpanKeEEPROM(int addr, String data) {
-  int len = data.length();
-  for (int i = 0; i < len; i++) {
-    EEPROM.write(addr + i, data[i]);
-  }
-  EEPROM.write(addr + len, '\0'); // tambahkan null terminator
-  EEPROM.commit();
-}
-
-String bacaDariEEPROM(int addr) {
-  String data = "";
-  char ch = EEPROM.read(addr);
-  while (ch != '\0') {
-    data += ch;
-    addr++;
-    ch = EEPROM.read(addr);
-  }
-  return data;
-}
-
 void home() {
   if (!is_authentified()){
     server.sendHeader("Location","/login");
@@ -136,19 +116,19 @@ void deviceMonitor() {
     return;
   }
 
-  float value = readTemperature();
-  float value_device_2 = readHumidity();
-  float value_device_3 = readTds();
-  float value_device_4 = readTurbidity();
-  float value_device_5 = readWaterTemp();
-  float value_device_6 = readPh();
+  String value_devices_1 = readEEPROM(4000);
+  String value_devices_2 = readEEPROM(4000 + value_devices_1.length() + 1);
+  String value_devices_3 = readEEPROM(4000 + value_devices_1.length() + value_devices_2.length() + 2);
+  String value_devices_4 = readEEPROM(4000 + value_devices_1.length() + value_devices_2.length() + value_devices_3.length() + 3);
+  String value_devices_5 = readEEPROM(4000 + value_devices_1.length() + value_devices_2.length() + value_devices_3.length() + value_devices_4.length() + 4);
+  String value_devices_6 = readEEPROM(4000 + value_devices_1.length() + value_devices_2.length() + value_devices_3.length() + value_devices_4.length() + value_devices_5.length() + 5);
   
   String html = "<html charset=UTF-8>";
   html += "<head> <meta charset='utf-8'/> <meta name='viewport' content='width=device-width'> <title>Arduino Device Setup | Aquamonia</title> <meta name='title' content='Arduino Device Setup | Aquamonia'> <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css'> <link rel='stylesheet' href='https://aquamonia.com/arduino/assets/css/style.css'></head>";
   html += "<body>";
   html += "<div class='container'>";
   html += "<header> <nav class='navbar navbar-expand-md navbar-light fixed-top' style='background-color: #e3f2fd;'> <div class='container'> <a class='navbar-brand' href='/'>Aquamonia Devices Setup</a> <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#navbarCollapse' aria-controls='navbarCollapse' aria-expanded='false' aria-label='Toggle navigation'> <span class='navbar-toggler-icon'></span> </button> <div class='collapse navbar-collapse' id='navbarCollapse'> <ul class='navbar-nav ml-auto'> <li class='nav-item'> <a class='nav-link' href='/'>Home</a> </li><li class='nav-item'> <a class='nav-link' href='/device-setup'>Setup Device API's</a> </li><li class='nav-item active'> <a class='nav-link' href='/device-monitor'>Device Monitor</a> </li><li class='nav-item'> <a class='nav-link' href='https://aquamonia.com' target='_blank'>OS Aquamonia</a> </li><li class='nav-item'> <a class='nav-link' href='/menu-reset'>Reset Config</a> </li><li class='nav-item'> <a class='nav-link' href=\"/login?DISCONNECT=YES\">Logout</a> </li></ul> </div></div></nav> </header>";
-  html += "<main role='main' style='padding-top: 100px'> <header class='text-center'> <p>This Page will be refresh in <span id='time'>32</span> second</p><h1>Device Monitoring</h1> </header> <div class='row text-center'> <div class='col-12'></div><div id='gg2' class='col-4 gauge' data-value='" + String(value) +"' data-title='Temperature Sensor'></div><div id='gg3' class='col-4 gauge' data-value='" + String(value_device_2) +"' data-title='Humidity Sensor'></div><div id='gg4' class='col-4 gauge' data-value='" + String(value_device_3) +"' data-title='TDS Sensor'></div><div id='gg5' class='col-4 gauge' data-value='" + String(value_device_4) +"' data-title='Turbidity Sensor'></div><div id='gg6' class='col-4 gauge' data-value='" + String(value_device_5) +"' data-title='Water Temperature'></div><div id='gg7' class='col-4 gauge' data-value='" + String(value_device_6) +"' data-title='PH Water Sensor'></div></div></main>";
+  html += "<main role='main' style='padding-top: 100px'> <header class='text-center'> <p>This Page will be refresh in <span id='time'>32</span> second</p><h1>Device Monitoring</h1> </header> <div class='row text-center'> <div class='col-12'></div><div id='gg2' class='col-4 gauge' data-value='" + String(value_devices_1) +"' data-title='Temperature Sensor'></div><div id='gg3' class='col-4 gauge' data-value='" + String(value_devices_2) +"' data-title='Humidity Sensor'></div><div id='gg4' class='col-4 gauge' data-value='" + String(value_devices_3) +"' data-title='TDS Sensor'></div><div id='gg5' class='col-4 gauge' data-value='" + String(value_devices_4) +"' data-title='Turbidity Sensor'></div><div id='gg6' class='col-4 gauge' data-value='" + String(value_devices_5) +"' data-title='Water Temperature'></div><div id='gg7' class='col-4 gauge' data-value='" + String(value_devices_6) +"' data-title='PH Water Sensor'></div></div></main>";
   html += "<script src='https://code.jquery.com/jquery-3.3.1.slim.min.js'></script> <script src='https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js'></script> <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js'></script> <script src='https://aquamonia.com/arduino/assets/js/raphael.min.js'></script> <script src='https://aquamonia.com/arduino/assets/js/justgage.js'></script> <script src='https://aquamonia.com/arduino/assets/js/script.js'></script>";
   html += "</div>";
   html += "</body>";
@@ -164,15 +144,15 @@ void deviceSetup(){
     return;
   }
 
-  String NewSendInterval = bacaDariEEPROM(0);
-  String NewEndpointUrl = bacaDariEEPROM(NewSendInterval.length() + 1);
-  String NewAuthSecretKey = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + 2);
-  String NewDeviceApiKey  = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + 3);
-  String NewDeviceApiKey_2 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + 4);
-  String NewDeviceApiKey_3 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + 5);
-  String NewDeviceApiKey_4 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + 6);
-  String NewDeviceApiKey_5 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + 7);          
-  String NewDeviceApiKey_6 = bacaDariEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + NewDeviceApiKey_5.length() + 8);          
+  String NewSendInterval = readEEPROM(0);
+  String NewEndpointUrl = readEEPROM(NewSendInterval.length() + 1);
+  String NewAuthSecretKey = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + 2);
+  String NewDeviceApiKey  = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + 3);
+  String NewDeviceApiKey_2 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + 4);
+  String NewDeviceApiKey_3 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + 5);
+  String NewDeviceApiKey_4 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + 6);
+  String NewDeviceApiKey_5 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + 7);          
+  String NewDeviceApiKey_6 = readEEPROM(NewSendInterval.length() + NewEndpointUrl.length() + NewAuthSecretKey.length() + NewDeviceApiKey.length() + NewDeviceApiKey_2.length() + NewDeviceApiKey_3.length() + NewDeviceApiKey_4.length() + NewDeviceApiKey_5.length() + 8);          
   
   String SendInterval = String(NewSendInterval);
   String EndpointUrl = String(NewEndpointUrl);
@@ -204,7 +184,7 @@ void deviceSetup(){
   html += "<tbody>";
   html += "<tr>";
   html += "<th scope='row'>1</th>";
-  html += "<td>Data Sending Interval (Hour)</td>";
+  html += "<td>Data Sending Interval (Minutes)</td>";
   html += "<td><input type='number' id='interval' name='interval' value='" + SendInterval + "' style='width:100%;'></td>";
   html += "</tr>";
   html += "<tr>";
@@ -317,23 +297,23 @@ void saveWebEeProm(){
       String DeviceApiKey_6 = server.arg("deviceKey_6");
 
       int addr = 0; // alamat awal penyimpanan di EEPROM
-      simpanKeEEPROM(addr, SendInterval);
+      saveEEPROM(addr, SendInterval);
       addr += SendInterval.length() + 1;
-      simpanKeEEPROM(addr, EndpointUrl);
+      saveEEPROM(addr, EndpointUrl);
       addr += EndpointUrl.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, AuthSecretKey);
+      saveEEPROM(addr, AuthSecretKey);
       addr += AuthSecretKey.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey);
+      saveEEPROM(addr, DeviceApiKey);
       addr += DeviceApiKey.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_2);
+      saveEEPROM(addr, DeviceApiKey_2);
       addr += DeviceApiKey_2.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_3);
+      saveEEPROM(addr, DeviceApiKey_3);
       addr += DeviceApiKey_3.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_4);
+      saveEEPROM(addr, DeviceApiKey_4);
       addr += DeviceApiKey_4.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_5);
+      saveEEPROM(addr, DeviceApiKey_5);
       addr += DeviceApiKey_5.length() + 1; // tambahkan panjang string + 1 untuk null terminator
-      simpanKeEEPROM(addr, DeviceApiKey_6);
+      saveEEPROM(addr, DeviceApiKey_6);
 
       server.sendHeader("Location","/device-setup");
       server.sendHeader("Cache-Control","no-cache");
@@ -355,7 +335,7 @@ void resetingEeprom(){
 }
 
 void setup_esp_server(){
-  EEPROM.begin(2048);
+  setupEEPROM();
   // inisialisasi server web dan menangani permintaan root
   server.on("/", home);
   server.on("/login", handleLogin);

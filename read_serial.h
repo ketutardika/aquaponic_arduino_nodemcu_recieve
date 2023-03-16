@@ -9,4 +9,5 @@ float readTds();
 float readTurbidity();
 float readWaterTemp();
 float readPh();
-void send_ip();
+void readSerialData();
+void sendIP();
