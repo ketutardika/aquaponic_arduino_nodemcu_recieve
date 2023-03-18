@@ -1,5 +1,3 @@
-#include <ESP8266WiFi.h>        //import ESP8266 WiFi library
-#include <ESP8266HTTPClient.h>  //import ESP8266 HTTP Client library
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
 
